@@ -9,6 +9,20 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v3
         with: { gradle-version: 8.7 }
+      - name: Arrange files
+        run: |
+          set -e
+          D=app/src/main/java/sa/tv/launcher
+          mkdir -p $D app/src/main/res/font app/src/main/res/drawable-nodpi
+          if grep -q namespace build.gradle; then cp build.gradle app/build.gradle; fi
+          printf "plugins {\n    id 'com.android.application' version '8.5.2' apply false\n    id 'org.jetbrains.kotlin.android' version '1.9.24' apply false\n}\n" > build.gradle
+          rm -f $D/*.kt
+          for f in *.kt; do [ -f "$f" ] && mv -f "$f" $D/; done
+          for f in *.otf; do [ -f "$f" ] && mv -f "$f" app/src/main/res/font/; done
+          for f in wall*.jpg; do [ -f "$f" ] && mv -f "$f" app/src/main/res/drawable-nodpi/; done
+          [ -f AndroidManifest.xml ] && mv -f AndroidManifest.xml app/src/main/AndroidManifest.xml
+          grep -n versionName app/build.gradle
+          find app -type f | sort
       - run: gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with: { name: TvLauncher-apk, path: app/build/outputs/apk/debug/app-debug.apk }
