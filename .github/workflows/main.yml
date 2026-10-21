@@ -14,7 +14,7 @@ jobs:
           set -e
           D=app/src/main/java/sa/tv/launcher
           mkdir -p $D app/src/main/res/font app/src/main/res/drawable-nodpi
-          if grep -q namespace build.gradle; then cp build.gradle app/build.gradle; fi
+          printf "plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android' }\nandroid {\n    namespace 'sa.tv.launcher'\n    compileSdk 34\n    defaultConfig { applicationId \"sa.tv.launcher\"; minSdk 26; targetSdk 34; versionCode 2; versionName \"2.0\" }\n    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }\n    kotlinOptions { jvmTarget = '17' }\n}\n" > app/build.gradle
           printf "plugins {\n    id 'com.android.application' version '8.5.2' apply false\n    id 'org.jetbrains.kotlin.android' version '1.9.24' apply false\n}\n" > build.gradle
           rm -f $D/*.kt
           for f in *.kt; do [ -f "$f" ] && mv -f "$f" $D/; done
